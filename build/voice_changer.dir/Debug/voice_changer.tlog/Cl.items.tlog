@@ -1,6 +1,0 @@
-D:\Travail\Projets_perso\voice-changer\src\app\main.cpp;D:\Travail\Projets_perso\voice-changer\build\voice_changer.dir\Debug\main.obj
-D:\Travail\Projets_perso\voice-changer\src\audio\DeviceUtils.cpp;D:\Travail\Projets_perso\voice-changer\build\voice_changer.dir\Debug\DeviceUtils.obj
-D:\Travail\Projets_perso\voice-changer\src\audio\WasapiCapture.cpp;D:\Travail\Projets_perso\voice-changer\build\voice_changer.dir\Debug\WasapiCapture.obj
-D:\Travail\Projets_perso\voice-changer\src\audio\WasapiRender.cpp;D:\Travail\Projets_perso\voice-changer\build\voice_changer.dir\Debug\WasapiRender.obj
-D:\Travail\Projets_perso\voice-changer\src\core\RingBuffer.cpp;D:\Travail\Projets_perso\voice-changer\build\voice_changer.dir\Debug\RingBuffer.obj
-D:\Travail\Projets_perso\voice-changer\src\dsp\GainEffect.cpp;D:\Travail\Projets_perso\voice-changer\build\voice_changer.dir\Debug\GainEffect.obj
