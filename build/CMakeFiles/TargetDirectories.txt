@@ -1,0 +1,3 @@
+D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir
+D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/edit_cache.dir
+D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/rebuild_cache.dir

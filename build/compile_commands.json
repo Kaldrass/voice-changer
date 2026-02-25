@@ -1,0 +1,44 @@
+[
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\app\\main.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\app\\main.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/app/main.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/app/main.cpp.obj"
+},
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\audio\\DeviceUtils.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\audio\\DeviceUtils.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/audio/DeviceUtils.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/audio/DeviceUtils.cpp.obj"
+},
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\audio\\WasapiCapture.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\audio\\WasapiCapture.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/audio/WasapiCapture.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/audio/WasapiCapture.cpp.obj"
+},
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\audio\\WasapiRender.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\audio\\WasapiRender.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/audio/WasapiRender.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/audio/WasapiRender.cpp.obj"
+},
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\core\\RingBuffer.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\core\\RingBuffer.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/core/RingBuffer.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/core/RingBuffer.cpp.obj"
+},
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\dsp\\GainEffect.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\dsp\\GainEffect.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/dsp/GainEffect.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/dsp/GainEffect.cpp.obj"
+},
+{
+  "directory": "D:/Travail/Projets_perso/voice-changer/build",
+  "command": "C:\\PROGRA~1\\MIB055~1\\18\\COMMUN~1\\VC\\Tools\\MSVC\\1450~1.357\\bin\\Hostx86\\x86\\cl.exe  /nologo /TP -DNOMINMAX -DWIN32_LEAN_AND_MEAN -ID:\\Travail\\Projets_perso\\voice-changer\\src /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MDd /FoCMakeFiles\\voice_changer.dir\\src\\dsp\\SoftClipperEffect.cpp.obj /FdCMakeFiles\\voice_changer.dir\\ /FS -c D:\\Travail\\Projets_perso\\voice-changer\\src\\dsp\\SoftClipperEffect.cpp",
+  "file": "D:/Travail/Projets_perso/voice-changer/src/dsp/SoftClipperEffect.cpp",
+  "output": "D:/Travail/Projets_perso/voice-changer/build/CMakeFiles/voice_changer.dir/src/dsp/SoftClipperEffect.cpp.obj"
+}
+]
