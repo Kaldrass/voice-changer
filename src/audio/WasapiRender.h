@@ -40,6 +40,9 @@ public:
     WasapiRenderInfo GetRenderInfo() const noexcept;
     AudioFormat GetFormat() const noexcept { return m_format; }
 
+    UINT32 GetLastPaddingFrames() const noexcept { return m_lastPaddingFrames.load(std::memory_order_relaxed); }
+    UINT32 GetBufferFrames() const noexcept { return m_bufferFrames; }
+
 private:
     void ThreadMain();
 
@@ -67,5 +70,7 @@ private:
     bool m_deviceIsFloat32 = false;
 
     UINT32 m_bufferFrames = 0;
+    
+    std::atomic<UINT32> m_lastPaddingFrames{0};
 };
 

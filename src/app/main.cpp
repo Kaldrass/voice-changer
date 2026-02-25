@@ -11,6 +11,8 @@
 #include "core/RingBuffer.h"
 #include "dsp/EffectChain.h"
 #include "dsp/GainEffect.h"
+#include "dsp/PitchShiftEffect.h"
+#include "dsp/SoftClipperEffect.h"
 
 static void PrintDevices(const std::vector<AudioDeviceInfo>& devs, const char* title)
 {
@@ -42,7 +44,9 @@ int main(int argc, char** argv)
         std::wstring inSub, outSub;
         int inIndex = -1, outIndex = -1;
         float gainValue = 1.0f;
-
+        float clipDrive = 2.0f;
+        float clipOutGain = 1.0f;
+        float pitchSemis = 0.0f;
         std::cout << "argc=" << argc << "\n";
         for (int i = 1; i < argc; ++i)
         {
@@ -54,6 +58,30 @@ int main(int argc, char** argv)
             else if (a == "--in-index" && i + 1 < argc) inIndex = std::stoi(argv[++i]);
             else if (a == "--out-index" && i + 1 < argc) outIndex = std::stoi(argv[++i]);
             else if (a == "--gain" && i + 1 < argc) gainValue = std::stof(argv[++i]);
+            else if (a == "--clip-drive" && i + 1 < argc) clipDrive = std::stof(argv[++i]);
+            else if (a == "--clip-out" && i + 1 < argc) clipOutGain = std::stof(argv[++i]);
+            else if (a == "--pitch-semitones" && i + 1 < argc) pitchSemis = std::stof(argv[++i]);
+            else if (a == "--help")
+            {
+                std::cout << "Usage: voice_changer [options]\n"
+                          << "Options:\n"
+                          << "  --list-devices           List audio devices and exit\n"
+                          << "  --in <substring>         Select input device by substring match\n"
+                          << "  --out <substring>        Select output device by substring match\n"
+                          << "  --in-index <index>       Select input device by index (from --list-devices)\n"
+                          << "  --out-index <index>      Select output device by index (from --list-devices)\n"
+                          << "  --gain <float>          Set gain effect value (default 1.0)\n"
+                          << "  --clip-drive <float>    Set soft clipper drive (default 2.0)\n"
+                          << "  --clip-out <float>      Set soft clipper output gain (default 1.0)\n"
+                          << "  --pitch-semitones <float> Set pitch shift in semitones (default 0.0)\n";
+                CoUninitialize();
+                return 0;
+            }
+            else
+            {
+                std::cerr << "Unknown argument: " << a << "\n";
+                return 1;
+            }
         }
 
         auto ins = EnumerateDevices(AudioFlow::Capture);
@@ -82,29 +110,36 @@ int main(int argc, char** argv)
         IMMDevice* outDev = GetDeviceById(outs[outIndex].id);
 
         AudioStats stats;
-
-        // Create capture first to know the format; then allocate ring buffer.
-        // We'll assume render mix format matches common sample rate/channels; shared mode will resample if needed.
-        // For simplicity in v1, we allocate a 2-channel buffer and rely on shared-mode mixing.
         
+        // Internal format: stereo ring buffer
         RingBufferF32 rb(16384, 2);
-
-        EffectChain chain;
-        auto gain = std::make_unique<GainEffect>();
-        gain->SetGain(gainValue);
-        chain.Add(std::move(gain));
-
+        
         WasapiCapture cap(inDev, rb, stats);
-        WasapiRender ren(outDev, rb, stats, chain);
-
         cap.Initialize();
-        ren.Initialize();
         
         auto ci = cap.GetDeviceFormatInfo();
-        auto ri = ren.GetRenderInfo();
         std::cout << "CAPTURE: " << ci.sampleRate << " Hz, " << ci.channels
                   << " ch, " << (ci.isFloat32 ? "float32" : "int16") << "\n";
         
+        EffectChain chain;
+        
+        auto gain = std::make_unique<GainEffect>();
+        gain->SetGain(gainValue);
+        chain.Add(std::move(gain));
+        
+        auto pitch = std::make_unique<PitchShiftEffect>(ci.sampleRate, 2);
+        pitch->SetPitchSemiTones(pitchSemis);
+        chain.Add(std::move(pitch));
+        
+        auto clip = std::make_unique<SoftClipperEffect>();
+        clip->SetDrive(clipDrive);
+        clip->SetOutputGain(clipOutGain);
+        chain.Add(std::move(clip));
+        
+        WasapiRender ren(outDev, rb, stats, chain);
+        ren.Initialize();
+        
+        auto ri = ren.GetRenderInfo();
         std::cout << "RENDER : " << ri.sampleRate << " Hz, " << ri.channels
                   << " ch, " << (ri.isFloat32 ? "float32" : "int16")
                   << ", bufferFrames=" << ri.bufferFrames << "\n";
@@ -113,10 +148,18 @@ int main(int argc, char** argv)
             std::cout << "WARNING: channel mismatch (capture " << ci.channels << " vs render " << ri.channels << ")\n";
         if (ci.sampleRate != ri.sampleRate)
             std::cout << "WARNING: sample rate mismatch (capture " << ci.sampleRate << " vs render " << ri.sampleRate << ")\n";
-
+        
         cap.Start();
+        
+        const uint32_t warmupTargetFrames = 1024;
+        for (int i = 0; i < 200; ++i)
+        {
+            if (rb.AvailableToRead() >= warmupTargetFrames) break;
+            Sleep(1);
+        }
+        
         ren.Start();
-
+        
         auto ri2 = ren.GetRenderInfo();
         std::cout << "RENDER (after start): bufferFrames=" << ri2.bufferFrames << "\n";
 
@@ -129,6 +172,19 @@ int main(int argc, char** argv)
             const auto renFrames = stats.renderFrames.load();
             const auto xr = stats.xruns.load();
             std::cout << "captureFrames=" << capFrames << " renderFrames=" << renFrames << " xruns=" << xr << "\n";
+
+            const auto rbFrames = static_cast<uint32_t>(rb.AvailableToRead());
+            const auto padding = ren.GetLastPaddingFrames();
+            const int sr = ci.sampleRate; // capture sample rate (tu as ci)
+            
+            double latMs = 0.0;
+            if (sr > 0)
+                latMs = (static_cast<double>(rbFrames + padding) * 1000.0) / static_cast<double>(sr);
+            
+            std::cout << "rbFrames=" << rbFrames
+                      << " padding=" << padding
+                      << " approxOutLatencyMs=" << latMs
+                      << "\n";
         }
 
         ren.Stop();

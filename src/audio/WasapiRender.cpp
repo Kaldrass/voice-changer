@@ -209,6 +209,8 @@ void WasapiRender::ThreadMain()
 
         UINT32 paddingFrames = 0;
         hr = m_audioClient->GetCurrentPadding(&paddingFrames);
+        m_lastPaddingFrames.store(paddingFrames, std::memory_order_relaxed);
+        
         if (FAILED(hr))
         {
             m_stats.xruns.fetch_add(1, std::memory_order_relaxed);
