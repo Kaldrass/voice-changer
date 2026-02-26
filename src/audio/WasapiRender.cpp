@@ -201,6 +201,11 @@ void WasapiRender::ThreadMain()
         return;
     }
 
+    // Target ring-buffer fill (frames). Keeps latency stable.
+    const size_t targetRbFrames = 640;
+    const size_t rbMarginFrames = 256;
+    const size_t maxDropPerCycle = 256;
+
     while (m_running.load(std::memory_order_acquire))
     {
         DWORD waitRes = WaitForSingleObject(m_event, 2000);
@@ -210,7 +215,7 @@ void WasapiRender::ThreadMain()
         UINT32 paddingFrames = 0;
         hr = m_audioClient->GetCurrentPadding(&paddingFrames);
         m_lastPaddingFrames.store(paddingFrames, std::memory_order_relaxed);
-        
+
         if (FAILED(hr))
         {
             m_stats.xruns.fetch_add(1, std::memory_order_relaxed);
@@ -220,10 +225,18 @@ void WasapiRender::ThreadMain()
         UINT32 availFrames = bufferFrames - paddingFrames;
         if (availFrames == 0) continue;
 
+        // Drain excess latency: if ring buffer got too full, drop oldest frames.
+        const size_t rbFrames = m_ringBuffer.AvailableToRead();
+        if (rbFrames > targetRbFrames + rbMarginFrames)
+        {
+            size_t toDrop = rbFrames - targetRbFrames;
+            if (toDrop > maxDropPerCycle) toDrop = maxDropPerCycle;
+            m_ringBuffer.Drop(toDrop);
+        }
+
         const size_t needed = static_cast<size_t>(availFrames) * static_cast<size_t>(m_format.channels);
         if (m_tmp.size() < needed) m_tmp.resize(needed);
 
-        // Pop from ring buffer; if insufficient, fill remainder with silence.
         size_t gotFrames = m_ringBuffer.Pop(m_tmp.data(), static_cast<size_t>(availFrames));
         if (gotFrames < static_cast<size_t>(availFrames))
         {
@@ -232,7 +245,6 @@ void WasapiRender::ThreadMain()
             m_stats.xruns.fetch_add(1, std::memory_order_relaxed);
         }
 
-        // Apply effect chain in-place (float32).
         m_chain.Process(m_tmp.data(), static_cast<size_t>(availFrames), m_format.channels);
 
         BYTE* dst = nullptr;

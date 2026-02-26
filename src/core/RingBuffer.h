@@ -13,11 +13,9 @@ public:
     size_t CapacityFrames() const noexcept { return m_capacityFrames; }
     int Channels() const noexcept { return m_channels; }
 
-    // Returns frames actually written
     size_t Push(const float* interleaved, size_t frames) noexcept;
-
-    // Returns frames actually read
     size_t Pop(float* interleaved, size_t frames) noexcept;
+    size_t Drop(size_t frames) noexcept;
 
     size_t AvailableToRead() const noexcept;
     size_t AvailableToWrite() const noexcept;

@@ -62,3 +62,13 @@ size_t RingBufferF32::Pop(float* out, size_t frames) noexcept
     m_readIndex.store(r + toRead, std::memory_order_release);
     return toRead;
 }
+
+size_t RingBufferF32::Drop(size_t frames) noexcept
+{
+    const size_t canRead = AvailableToRead();
+    const size_t toDrop = std::min(frames, canRead);
+
+    const size_t r = m_readIndex.load(std::memory_order_relaxed);
+    m_readIndex.store(r + toDrop, std::memory_order_release);
+    return toDrop;
+}

@@ -41,6 +41,8 @@ add_executable(voice_changer
     src/dsp/GainEffect.cpp
     src/dsp/SoftClipperEffect.cpp
     src/dsp/PitchShiftEffect.cpp
+    src/dsp/Biquad.cpp
+    src/dsp/EQEffect.cpp
 )
 
 target_include_directories(voice_changer PRIVATE src)
