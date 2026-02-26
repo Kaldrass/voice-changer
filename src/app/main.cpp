@@ -47,6 +47,9 @@ int main(int argc, char** argv)
         float clipDrive = 2.0f;
         float clipOutGain = 1.0f;
         float pitchSemis = 0.0f;
+        uint8_t stSeqMs = 20;
+        uint8_t stSeekMs = 8;
+        uint8_t stOverlapMs = 4;
         std::cout << "argc=" << argc << "\n";
         for (int i = 1; i < argc; ++i)
         {
@@ -61,6 +64,9 @@ int main(int argc, char** argv)
             else if (a == "--clip-drive" && i + 1 < argc) clipDrive = std::stof(argv[++i]);
             else if (a == "--clip-out" && i + 1 < argc) clipOutGain = std::stof(argv[++i]);
             else if (a == "--pitch-semitones" && i + 1 < argc) pitchSemis = std::stof(argv[++i]);
+            else if (a == "--st-seq-ms" && i + 1 < argc) stSeqMs = static_cast<uint8_t>(std::stoi(argv[++i]));
+            else if (a == "--st-seek-ms" && i + 1 < argc) stSeekMs = static_cast<uint8_t>(std::stoi(argv[++i]));
+            else if (a == "--st-overlap-ms" && i + 1 < argc) stOverlapMs = static_cast<uint8_t>(std::stoi(argv[++i]));
             else if (a == "--help")
             {
                 std::cout << "Usage: voice_changer [options]\n"
@@ -73,7 +79,10 @@ int main(int argc, char** argv)
                           << "  --gain <float>          Set gain effect value (default 1.0)\n"
                           << "  --clip-drive <float>    Set soft clipper drive (default 2.0)\n"
                           << "  --clip-out <float>      Set soft clipper output gain (default 1.0)\n"
-                          << "  --pitch-semitones <float> Set pitch shift in semitones (default 0.0)\n";
+                          << "  --pitch-semitones <float> Set pitch shift in semitones (default 0.0)\n"
+                          << "  --st-seq-ms <int>       Set SoundTouch sequence ms (default 20)\n"
+                          << "  --st-seek-ms <int>      Set SoundTouch seek window ms\n"
+                          << "  --st-overlap-ms <int>   Set SoundTouch overlap ms\n";
                 CoUninitialize();
                 return 0;
             }
@@ -112,7 +121,7 @@ int main(int argc, char** argv)
         AudioStats stats;
         
         // Internal format: stereo ring buffer
-        RingBufferF32 rb(16384, 2);
+        RingBufferF32 rb(2048, 2);
         
         WasapiCapture cap(inDev, rb, stats);
         cap.Initialize();
@@ -129,6 +138,8 @@ int main(int argc, char** argv)
         
         auto pitch = std::make_unique<PitchShiftEffect>(ci.sampleRate, 2);
         pitch->SetPitchSemiTones(pitchSemis);
+        auto* pitchPtr = pitch.get();
+        pitch->SetLowLatencyParams(stSeqMs, stSeekMs, stOverlapMs);
         chain.Add(std::move(pitch));
         
         auto clip = std::make_unique<SoftClipperEffect>();
@@ -151,7 +162,7 @@ int main(int argc, char** argv)
         
         cap.Start();
         
-        const uint32_t warmupTargetFrames = 1024;
+        const uint32_t warmupTargetFrames = 256;
         for (int i = 0; i < 200; ++i)
         {
             if (rb.AvailableToRead() >= warmupTargetFrames) break;
@@ -175,15 +186,17 @@ int main(int argc, char** argv)
 
             const auto rbFrames = static_cast<uint32_t>(rb.AvailableToRead());
             const auto padding = ren.GetLastPaddingFrames();
-            const int sr = ci.sampleRate; // capture sample rate (tu as ci)
-            
-            double latMs = 0.0;
+            const int sr = ci.sampleRate; 
+           
+            const auto stQueued = pitchPtr->GetQueuedFrames(); 
+            double latMsTotal = 0.0;
             if (sr > 0)
-                latMs = (static_cast<double>(rbFrames + padding) * 1000.0) / static_cast<double>(sr);
-            
+                latMsTotal = (static_cast<double>(rbFrames + padding + stQueued) * 1000.0) / static_cast<double>(sr);
+
             std::cout << "rbFrames=" << rbFrames
                       << " padding=" << padding
-                      << " approxOutLatencyMs=" << latMs
+                      << " stQueued=" << stQueued
+                      << " approxTotalLatencyMs=" << latMsTotal
                       << "\n";
         }
 
