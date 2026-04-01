@@ -41,4 +41,6 @@ private:
     Biquad m_hp;
     Biquad m_peak;
     Biquad m_lp;
+
+    int m_lastChannels = 0;
 };

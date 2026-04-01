@@ -1,12 +1,17 @@
 # Build directories
 build/
 cmake-build-*/
+out/
+bin/
+lib/
 
 # CMake
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 compile_commands.json
+CTestTestfile.cmake
+Testing/
 
 # Compiled files
 *.o
@@ -18,7 +23,34 @@ compile_commands.json
 *.dll
 *.so
 *.a
+*.ilk
+*.exp
+*.idb
 
 # IDE
 .vscode/
 .idea/
+
+# Python environment/cache
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Context files
+docs/context/
+
+# Runtime diagnostic logs
+logs/
+
+# Large datasets and generated audio assets
+audio_samples/
+data/source_chunks/
+data/target_chunks/
+
+# ML artifacts
+models/checkpoints/
+*.onnx
+
+# Third-party heavy archives
+third_party/onnxruntime/*.zip

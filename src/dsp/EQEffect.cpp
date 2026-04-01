@@ -37,13 +37,13 @@ void EQEffect::RebuildIfNeeded(int channels) noexcept
 {
     if (channels <= 0) return;
 
-    // Ensure per-channel states exist
-    if (static_cast<size_t>(channels) != m_hpHz.load(std::memory_order_relaxed) * 0 + m_hpHz.load(std::memory_order_relaxed) * 0) { /* no-op */ }
-    // Re-init states if channel count changed
-    // (Biquad::Process also resets lazily, but we keep it explicit here)
-    m_hp.Reset(channels);
-    m_peak.Reset(channels);
-    m_lp.Reset(channels);
+    if (channels != m_lastChannels)
+    {
+        m_hp.Reset(channels);
+        m_peak.Reset(channels);
+        m_lp.Reset(channels);
+        m_lastChannels = channels;
+    }
 
     const float hpHz = m_hpHz.load(std::memory_order_relaxed);
     const float hpQ  = m_hpQ.load(std::memory_order_relaxed);
